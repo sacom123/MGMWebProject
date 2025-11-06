@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mokgumeong-web:
+    image: ghcr.io/${GITHUB_REPOSITORY}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Hyperflow Configuration
+      - HYPERFLOW_API_KEY=${HYPERFLOW_API_KEY}
+      - HYPERFLOW_FLOWGRAPH_ID=${HYPERFLOW_FLOWGRAPH_ID}
+      - NEXT_PUBLIC_HYPERFLOW_FLOWGRAPH_ID=${NEXT_PUBLIC_HYPERFLOW_FLOWGRAPH_ID}
+      # Firebase Configuration
+      - NEXT_PUBLIC_FIREBASE_API_KEY=${NEXT_PUBLIC_FIREBASE_API_KEY}
+      - NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
+      - NEXT_PUBLIC_FIREBASE_PROJECT_ID=${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
+      - NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
+      - NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+      - NEXT_PUBLIC_FIREBASE_APP_ID=${NEXT_PUBLIC_FIREBASE_APP_ID}
+      - FIREBASE_ADMIN_PROJECT_ID=${FIREBASE_ADMIN_PROJECT_ID}
+      - FIREBASE_ADMIN_CLIENT_EMAIL=${FIREBASE_ADMIN_CLIENT_EMAIL}
+      - FIREBASE_ADMIN_PRIVATE_KEY=${FIREBASE_ADMIN_PRIVATE_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - mokgumeong-network
+
+networks:
+  mokgumeong-network:
+    driver: bridge
+
