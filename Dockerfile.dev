@@ -1,0 +1,35 @@
+# Development Dockerfile with hot reload support
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache libc6-compat
+
+# Copy package files
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+
+# Install dependencies (use pnpm if available, otherwise npm)
+RUN if [ -f pnpm-lock.yaml ]; then \
+      npm install -g pnpm && pnpm install; \
+    elif [ -f yarn.lock ]; then \
+      npm install -g yarn && yarn install; \
+    else \
+      npm ci; \
+    fi
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Set environment for development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Start development server
+CMD ["npm", "run", "dev"]
+

@@ -1,0 +1,20 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "menuItems",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "category", "order": "ASCENDING" }, { "fieldPath": "isBest", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "branches",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "region", "order": "ASCENDING" }, { "fieldPath": "featured", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "type", "order": "ASCENDING" }, { "fieldPath": "period", "order": "DESCENDING" }]
+    }
+  ],
+  "fieldOverrides": []
+}

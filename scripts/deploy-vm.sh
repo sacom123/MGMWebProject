@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Azure VM Deployment Script
-# This script sets up the application on Azure VM with auto-update capability
-
 set -e
 
 echo "🚀 Setting up Azure VM for 목구멍 Website..."
@@ -10,11 +7,11 @@ echo "🚀 Setting up Azure VM for 목구멍 Website..."
 # Configuration
 VM_USER="${VM_USER:-azureuser}"
 VM_IP="${VM_IP}"
+SSH_KEY_PATH="${SSH_KEY_PATH}"  # PEM 키 경로를 환경변수로 받음 (예: ~/.ssh/MGM_Admin.pem)
 APP_DIR="/opt/mokgumeong-bbq"
 GITHUB_REPO="${GITHUB_REPO:-your-username/mokgumeong-bbq}"
 GITHUB_TOKEN="${GITHUB_TOKEN}"
 
-# Colors
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
@@ -25,9 +22,15 @@ if [ -z "$VM_IP" ]; then
     exit 1
 fi
 
+# SSH 옵션 설정 (키가 있으면 -i 옵션 추가)
+if [ -n "$SSH_KEY_PATH" ]; then
+    SSH_OPTS="-i $SSH_KEY_PATH"
+else
+    SSH_OPTS=""
+fi
+
 echo -e "${BLUE}Step 1: Installing Docker on VM...${NC}"
-ssh $VM_USER@$VM_IP << 'EOF'
-    # Install Docker if not present
+ssh $SSH_OPTS $VM_USER@$VM_IP << 'EOF'
     if ! command -v docker &> /dev/null; then
         curl -fsSL https://get.docker.com -o get-docker.sh
         sudo sh get-docker.sh
@@ -35,13 +38,11 @@ ssh $VM_USER@$VM_IP << 'EOF'
         rm get-docker.sh
     fi
 
-    # Install Docker Compose if not present
     if ! command -v docker-compose &> /dev/null; then
         sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
     fi
 
-    # Install Watchtower for auto-updates
     docker run -d \
         --name watchtower \
         --restart unless-stopped \
@@ -53,17 +54,17 @@ ssh $VM_USER@$VM_IP << 'EOF'
 EOF
 
 echo -e "${BLUE}Step 2: Creating application directory...${NC}"
-ssh $VM_USER@$VM_IP << EOF
+ssh $SSH_OPTS $VM_USER@$VM_IP << EOF
     sudo mkdir -p $APP_DIR
     sudo chown $VM_USER:$VM_USER $APP_DIR
     cd $APP_DIR
 EOF
 
 echo -e "${BLUE}Step 3: Copying docker-compose.prod.yml to VM...${NC}"
-scp docker-compose.prod.yml $VM_USER@$VM_IP:$APP_DIR/
+scp -i $SSH_KEY_PATH docker-compose.prod.yml $VM_USER@$VM_IP:$APP_DIR/
 
 echo -e "${BLUE}Step 4: Creating .env template on VM...${NC}"
-ssh $VM_USER@$VM_IP << EOF
+ssh $SSH_OPTS $VM_USER@$VM_IP << EOF
     cd $APP_DIR
     cat > .env.template << 'EOL'
 # GitHub Repository (필수 - docker-compose.prod.yml에서 사용)
@@ -93,7 +94,7 @@ EOF
 
 echo -e "${BLUE}Step 5: Setting up GitHub Container Registry login (선택사항)...${NC}"
 if [ -n "$GITHUB_TOKEN" ]; then
-    ssh $VM_USER@$VM_IP << EOF
+    ssh $SSH_OPTS $VM_USER@$VM_IP << EOF
         echo "$GITHUB_TOKEN" | docker login ghcr.io -u $(echo "$GITHUB_REPO" | cut -d'/' -f1) --password-stdin
 EOF
     echo -e "${GREEN}✅ GitHub Container Registry 로그인 완료${NC}"
@@ -110,4 +111,3 @@ echo -e "   2. .env 파일 생성: cd $APP_DIR && cp .env.template .env && nano 
 echo -e "   3. 애플리케이션 시작: docker-compose -f docker-compose.prod.yml up -d"
 echo -e ""
 echo -e "${BLUE}📝 GitHub Actions가 자동으로 배포하면 Watchtower가 30초마다 새 이미지를 확인합니다.${NC}"
-

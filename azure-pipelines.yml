@@ -1,0 +1,69 @@
+# Azure DevOps Pipeline for CI/CD
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerRegistryServiceConnection: 'your-acr-connection'
+  imageRepository: 'mokgumeong-web'
+  containerRegistry: 'yourregistry.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build and push Docker image
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build and push image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+
+- stage: Deploy
+  displayName: Deploy to Azure
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy to Azure Container Instances
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            displayName: Deploy to Azure Container Instances
+            inputs:
+              azureSubscription: 'your-azure-subscription'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az container create \
+                  --resource-group mokgumeong-rg \
+                  --name mokgumeong-web \
+                  --image $(containerRegistry)/$(imageRepository):$(tag) \
+                  --dns-name-label mokgumeong \
+                  --ports 3000 \
+                  --environment-variables \
+                    NODE_ENV=production \
+                  --secure-environment-variables \
+                    NEXT_PUBLIC_FIREBASE_API_KEY=$(FIREBASE_API_KEY) \
+                    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$(FIREBASE_AUTH_DOMAIN) \
+                    NEXT_PUBLIC_FIREBASE_PROJECT_ID=$(FIREBASE_PROJECT_ID) \
+                  --registry-login-server $(containerRegistry) \
+                  --registry-username $(ACR_USERNAME) \
+                  --registry-password $(ACR_PASSWORD)
