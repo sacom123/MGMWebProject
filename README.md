@@ -1,79 +1,40 @@
-# 목구멍 한식 BBQ 웹사이트
+# 🇰🇷 목구멍 한식 BBQ 웹사이트 | 🇺🇸 Mokgumeong Korean BBQ Website
 
-목구멍 브랜드의 공식 웹사이트입니다. Next.js와 Firebase를 기반으로 구축되었습니다.
+비공식 브랜드 웹사이트로, Next.js + React + HyperFlow 기반의 모던 프런트엔드와 Next.js 백엔드를 사용해 구축했습니다.
 
-## 🚀 주요 기능
+This is the Unofficial brand website, built with a modern Next.js + React + HyperFlow frontend and Next.js backend.
 
-- **반응형 디자인**: 모바일, 태블릿, 데스크톱 최적화
-- **메뉴 소개**: 미박 삼겹살, 목살, 갈비본살 등 시그니처 메뉴
-- **매장 찾기**: 전국 매장 위치 및 정보
-- **가맹 문의**: 온라인 가맹 상담 신청
-- **고객 지원**: FAQ 및 문의 시스템
-- **AI 챗봇**: 실시간 고객 상담 (준비 중)
+---
 
-## 🛠️ 기술 스택
+## 🚀 주요 기능 | Key Features
 
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **Styling**: Tailwind CSS 4
-- **Backend**: Firebase (Firestore, Auth, Storage, Functions)
-- **UI Components**: Radix UI, shadcn/ui
-- **Deployment**: Vercel / Firebase Hosting
+- **반응형 디자인**: 모바일/태블릿/데스크톱에 최적화, Responsive UI across mobile, tablet, and desktop.
+- **메뉴 소개**: 미박 삼겹살, 목살, 갈비본살 등 시그니처 메뉴와 많은 사이드 메뉴, Menu Showcase for signature items (rind-off pork belly, pork neck, rib-eye cap, side menu(Ramen,된장찌개, etc...), etc.).
+- **매장 찾기**: 전국 매장 위치/영업 정보 제공, Store Locator with nationwide locations and hours.
+- **가맹 문의**: 온라인 가맹 상담 신청 폼, Franchise Inquiry via online application form.
+- **고객 지원**: FAQ 및 문의 접수, Support Center with FAQ and contact form.
+- **AI 챗봇**: 실시간 고객 상담, AI Chatbot for real-time support.
 
-## 📦 설치 및 실행
+---
 
-### 1. 저장소 클론
-\`\`\`bash
-git clone <repository-url>
-cd mokgumeong-bbq-website
-\`\`\`
+## 🛠️ 기술 스택 | Tech Stack
 
-### 2. 의존성 설치
-\`\`\`bash
-npm install
-\`\`\`
+- **Frontend** : React, TypeScript
+- **Styling** : Tailwind, Ant Design
+- **Backend** : Next.Js
+- **AI/Flows** : HyperFlow & HyperFlow SDK (chat flows, file upload hooks)
+- **Deployment** : Next.js
+⚠️ 버전은 프로젝트 시점 기준입니다. 환경에 따라 최신 버전과 다를 수 있습니다.
+⚠️ Versions reflect the project snapshot and may differ from latest releases.
 
-### 3. 환경 변수 설정
-\`\`\`bash
-cp .env.local.example .env.local
-# .env.local 파일을 편집하여 Firebase 설정 입력
-\`\`\`
+---
 
-### 4. 개발 서버 실행
-\`\`\`bash
-npm run dev
-\`\`\`
+📝 라이선스 | License
+Copyright © 목구멍.
+무단 복제 및 배포를 금합니다.
+All rights reserved.
 
-브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
+---
 
-## 📁 프로젝트 구조
-
-\`\`\`
-├── app/                    # Next.js App Router 페이지
-│   ├── page.tsx           # 홈페이지
-│   ├── brand/             # 브랜드 소개
-│   ├── menu/              # 메뉴
-│   ├── locations/         # 매장 찾기
-│   ├── franchise/         # 가맹 문의
-│   └── support/           # 고객 지원
-├── components/            # React 컴포넌트
-│   ├── header.tsx        # 헤더 네비게이션
-│   ├── footer.tsx        # 푸터
-│   └── chatbot-widget.tsx # 챗봇 위젯
-├── lib/                   # 유틸리티 및 설정
-│   └── firebase.ts       # Firebase 초기화
-├── public/               # 정적 파일
-└── firestore.rules       # Firestore 보안 규칙
-\`\`\`
-
-## 🔐 Firebase 설정
-
-1. [Firebase Console](https://console.firebase.google.com/)에서 프로젝트 생성
-2. Firestore Database 활성화
-3. 웹 앱 추가 및 구성 정보 복사
-4. `.env.local`에 Firebase 구성 정보 입력
-
-자세한 내용은 [DEPLOYMENT.md](./DEPLOYMENT.md) 참조
-
-## 📝 라이선스
-
-Copyright © 2025 목구멍. All rights reserved.
+📬 문의 | Contact
+Email: sacom415263@gmail.com (예시)
